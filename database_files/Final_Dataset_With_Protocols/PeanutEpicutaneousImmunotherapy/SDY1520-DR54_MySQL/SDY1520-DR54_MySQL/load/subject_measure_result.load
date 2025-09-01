@@ -1,0 +1,17 @@
+LOAD DATA LOCAL INFILE "../MySQL/subject_measure_result.txt"
+    into table subject_measure_result
+    fields terminated by '~@~'
+    lines terminated by '~@@~\n'
+    (
+      subject_measure_res_accession,
+      centraltendencymeasurevalue,
+      datavalue,
+      dispersionmeasurevalue,
+      study_accession,
+      study_day,
+      subject_accession,
+      subject_measure_accession,
+      time_of_day,
+      workspace_id,
+      year_of_measure
+    );

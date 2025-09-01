@@ -1,0 +1,55 @@
+PLANNED_VISIT_ACCESSION	END_RULE	MAX_START_DAY	MIN_START_DAY	NAME	ORDER_NUMBER	START_RULE	STUDY_ACCESSION	WORKSPACE_ID
+PV11361		1400	0	Dosing Symptom	54		SDY1520	3133
+PV7998		0	0	Screening Visit 00 Clinic Assessment	1		SDY1520	3133
+PV7999		0	0	Baseline (1044 mg OFC)Visit 01 Clinic Assessment	2		SDY1520	3133
+PV8000		1	1	Day 01 Dose Visit 02 Clinic Assessment	3		SDY1520	3133
+PV8001		2	2	Day 02 Dose Visit 03 Clinic Assessment	4		SDY1520	3133
+PV8002		14	14	Week 02 Visit 04 Clinic Assessment	5		SDY1520	3133
+PV8003		21	21	Week 03 Visit 05 Clinic Assessment	6		SDY1520	3133
+PV8004		28	28	Week 04 Visit 06 Clinic Assessment	7		SDY1520	3133
+PV8005		56	56	Week 08 Phone Assessment (Encounter)(Visit 06A)	8		SDY1520	3133
+PV8006		84	84	Week 12 Visit 07 Clinic Assessment	9		SDY1520	3133
+PV8007		112	112	Week 16 Phone Assessment (Encounter)(Visit 07A)	10		SDY1520	3133
+PV8008		140	140	Week 20 Phone Assessment (Encounter)(Visit 07B)	11		SDY1520	3133
+PV8009		168	168	Week 24 Visit 08 Clinic Assessment	12		SDY1520	3133
+PV8010		196	196	Week 28 Phone Assessment (Encounter)(Visit 08A)	13		SDY1520	3133
+PV8011		224	224	Week 32 Phone Assessment (Encounter)(Visit 08B)	14		SDY1520	3133
+PV8012		252	252	Week 36 Visit 09 Clinic Assessment	15		SDY1520	3133
+PV8013		280	280	Week 40 Phone Assessment (Encounter)(Visit 09A)	16		SDY1520	3133
+PV8014		308	308	Week 44 Phone Assessment (Encounter)(Visit 09B)	17		SDY1520	3133
+PV8015		336	336	Week 48 Phone Assessment (Encounter)(Visit 09C)	18		SDY1520	3133
+PV8016		364	364	Week 52 (5044 mg OFC) Visit 10 Clinic Assessment	19		SDY1520	3133
+PV8017		365	365	Visit 10AA Clinic Assessments	20		SDY1520	3133
+PV8018		366	366	Visit 10BB Clinic Assessments	21		SDY1520	3133
+PV8019		378	378	Visit 10CC Clinic Assessments	22		SDY1520	3133
+PV8020		385	385	Visit 10DD Clinic Assessments	23		SDY1520	3133
+PV8021		392	392	Visit 10EE Clinic Assessments	24		SDY1520	3133
+PV8022		420	420	Week 60 (5044 mg SU OFC) Visit 10Y Clinic Assessment	25		SDY1520	3133
+PV8023		504	504	Week 72 (5044 mg SU OFC) Visit 10Z Clinic Assessment	26		SDY1520	3133
+PV8024		504	504	Monthly call Phone Assessment (Encounter)(Visit 10A)	27		SDY1520	3133
+PV8025		504	504	Monthly call Phone Assessment (Encounter)(Visit 10B)	28		SDY1520	3133
+PV8026		504	504	Monthly call Phone Assessment (Encounter)(Visit 10C)	29		SDY1520	3133
+PV8027		504	504	Monthly call Phone Assessment (Encounter)(Visit 10D)	30		SDY1520	3133
+PV8028		504	504	Monthly call Phone Assessment (Encounter)(Visit 10E)	31		SDY1520	3133
+PV8029		504	504	Monthly call Phone Assessment (Encounter)(Visit 10F)	32		SDY1520	3133
+PV8030		546	546	Week 78 Visit 11 Clinic Assessment	33		SDY1520	3133
+PV8031		546	546	Monthly call Phone Assessment (Encounter)(Visit 11A)	34		SDY1520	3133
+PV8032		546	546	Monthly call Phone Assessment (Encounter)(Visit 11B)	35		SDY1520	3133
+PV8033		546	546	Monthly call Phone Assessment (Encounter)(Visit 11C)	36		SDY1520	3133
+PV8034		546	546	Monthly call Phone Assessment (Encounter)(Visit 11D)	37		SDY1520	3133
+PV8035		546	546	Monthly call Phone Assessment (Encounter)(Visit 11E)	38		SDY1520	3133
+PV8036		546	546	Monthly call Phone Assessment (Encounter)(Visit 11F)	39		SDY1520	3133
+PV8037		728	728	Week 104 Visit 12 Clinic Assessment	40		SDY1520	3133
+PV8038		728	728	Monthly call Phone Assessment (Encounter)(Visit 12A)	41		SDY1520	3133
+PV8039		728	728	Monthly call Phone Assessment (Encounter)(Visit 12B)	42		SDY1520	3133
+PV8040		728	728	Monthly call Phone Assessment (Encounter)(Visit 12C)	43		SDY1520	3133
+PV8041		728	728	Monthly call Phone Assessment (Encounter)(Visit 12D)	44		SDY1520	3133
+PV8042		728	728	Monthly call Phone Assessment (Encounter)(Visit 12E)	45		SDY1520	3133
+PV8043		728	728	Monthly call Phone Assessment (Encounter)(Visit 12F)	46		SDY1520	3133
+PV8044		910	910	Week 130 (5044 mg OFC) Visit 13 Clinic Assessment	47		SDY1520	3133
+PV8045		966	966	Week 138 (5044 mg SU OFC)  Visit 13Y Clinic Assessment	48		SDY1520	3133
+PV8046		1050	1050	Week 150 (5044 mg SU OFC) Visit 13Z Clinic Assessment	49		SDY1520	3133
+PV8047		1080	1080	1 Month Post Final OFC Visit F01 Phone Assessment	50		SDY1520	3133
+PV8048		1110	1110	2 Month Post Final OFC Visit F02 Phone Assessment	51		SDY1520	3133
+PV8049		1140	1140	3 Month Post Final OFC Visit F03 Phone Assessment	52		SDY1520	3133
+PV8050		1230	1230	6 Month Post Final OFC Visit F04 Phone Assessment	53		SDY1520	3133

@@ -1,0 +1,52 @@
+PLANNED_VISIT_ACCESSION	END_RULE	MAX_START_DAY	MIN_START_DAY	NAME	ORDER_NUMBER	START_RULE	STUDY_ACCESSION	WORKSPACE_ID
+PV10370		0	0	Unplanned Visit	51		SDY1515	3133
+PV10667		14	0	Maintenance Visit 03 Clinic Assessment	4		SDY1515	3133
+PV10668		308	0	Visit 02/03 Buildup/Maintenance - Segment B	5		SDY1515	3133
+PV10669		672	308	Visit 02/03 Buildup/Maintenance - Segment C (Cross-over)	13		SDY1515	3133
+PV10670		1568	308	Visit 05-15 Long-Term Maintenance - Segment D	14		SDY1515	3133
+PV7946		0	0	Screening Visit 00 Clinic Assessment	1		SDY1515	3133
+PV7947		0	0	Baseline Visit 01 Clinic Assessment	2		SDY1515	3133
+PV7948		0	0	Buildup Visit 02 Clinic Assessment	3		SDY1515	3133
+PV7949		14	14	Buildup Completion + 2 Weeks Visit 03A Clinic Assessment	6		SDY1515	3133
+PV7950		28	28	Buildup Completion + 4 Weeks Phone Assessment (Encounter)	7		SDY1515	3133
+PV7951		56	56	Buildup Completion + 8 Weeks (if indicated) Visit 03B Clinic Assessment	8		SDY1515	3133
+PV7952		84	84	Buildup Completion + 12 Weeks (if indicated) Phone Assessment (Encounter)	9		SDY1515	3133
+PV7953		112	112	Buildup Completion + 16 Weeks (if indicated) Visit 03C Clinic Assessment	10		SDY1515	3133
+PV7954		140	140	Buildup Completion + 20 Weeks (if indicated) Phone Assessment (Encounter)	11		SDY1515	3133
+PV7955		308	308	Week 44 (5-gram OFC and unblinding) Visit 04 Clinic Assessment	12		SDY1515	3133
+PV7956		336	336	Week 48 Phone Assessment (Encounter)	15		SDY1515	3133
+PV7957		364	364	Week 52 Phone Assessment (Encounter)	16		SDY1515	3133
+PV7958		392	392	Week 56 Visit 05 Clinic Assessment	17		SDY1515	3133
+PV7959		420	420	Week 60 Phone Assessment (Encounter)	18		SDY1515	3133
+PV7960		448	448	Week 64 Phone Assessment (Encounter)	19		SDY1515	3133
+PV7961		476	476	Week 68 (1st 10-gram OFC) Visit 06 Clinic Assessment	20		SDY1515	3133
+PV7962		504	504	Week 72 Phone Assessment (Encounter)	21		SDY1515	3133
+PV7963		532	532	Week 76 Phone Assessment (Encounter)	22		SDY1515	3133
+PV7964		560	560	Week 80 Visit 07 Clinic Assessment	23		SDY1515	3133
+PV7965		588	588	Week 84 Phone Assessment (Encounter)	24		SDY1515	3133
+PV7966		616	616	Week 88 Phone Assessment (Encounter)	25		SDY1515	3133
+PV7967		644	644	Week 92 Visit 08 Clinic Assessment	26		SDY1515	3133
+PV7968		672	672	Week 96 Phone Assessment (Encounter)	27		SDY1515	3133
+PV7969		700	700	Week 100 Phone Assessment (Encounter)	28		SDY1515	3133
+PV7970		728	728	Week 104 Visit 09 Clinic Assessment	29		SDY1515	3133
+PV7971		756	756	Week 108 Phone Assessment (Encounter)	30		SDY1515	3133
+PV7972		784	784	Week 112 Phone Assessment (Encounter)	31		SDY1515	3133
+PV7973		812	812	Week 116 (2nd 10-gram OFC) Visit 10 Clinic Assessment	32		SDY1515	3133
+PV7974		840	840	Week 120 Phone Assessment (Encounter)	33		SDY1515	3133
+PV7975		868	868	Week 124 Phone Assessment (Encounter)	34		SDY1515	3133
+PV7976		896	896	Week 128 Visit 11 Clinic Assessment	35		SDY1515	3133
+PV7977		924	924	Week 132 Phone Assessment (Encounter)	36		SDY1515	3133
+PV7978		952	952	Week 136 Phone Assessment (Encounter)	37		SDY1515	3133
+PV7979		980	980	Week 140 Visit 12 Clinic Assessment	38		SDY1515	3133
+PV7980		1008	1008	Week 144 Phone Assessment (Encounter)	39		SDY1515	3133
+PV7981		1036	1036	Week 148 Phone Assessment (Encounter)	40		SDY1515	3133
+PV7982		1064	1064	Week 152 Visit 13 Clinic Assessment	41		SDY1515	3133
+PV7983		1092	1092	Week 156 Phone Assessment (Encounter)	42		SDY1515	3133
+PV7984		1120	1120	Week 160 Phone Assessment (Encounter)	43		SDY1515	3133
+PV7985		1148	1148	Week 164 (3rd 10-gram OFC) Visit 14 Clinic Assessment	44		SDY1515	3133
+PV7986		1204	1204	Week 172 (Final 10-gram OFC, if Week 164 OFC passed) Visit 15 Clinic Assessment	45		SDY1515	3133
+PV7987		1232	1232	1 Month Post Final OFC Visit F01 Phone Assessment	46		SDY1515	3133
+PV7988		1260	1260	2 Month Post Final OFC Visit F02 Phone Assessment	47		SDY1515	3133
+PV7989		1288	1288	3 Month Post Final OFC Visit F03 Phone Assessment	48		SDY1515	3133
+PV7990		1372	1372	6 Month Post Final OFC Visit F04 Phone Assessment	49		SDY1515	3133
+PV7991		1568	1568	12 Month Post Final OFC Visit F05 Phone Assessment	50		SDY1515	3133

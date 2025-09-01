@@ -1,0 +1,54 @@
+PV11361~@~\N~@~1400~@~0~@~Dosing Symptom~@~54~@~\N~@~SDY1520~@~3133~@@~
+PV7998~@~\N~@~0~@~0~@~Screening Visit 00 Clinic Assessment~@~1~@~\N~@~SDY1520~@~3133~@@~
+PV7999~@~\N~@~0~@~0~@~Baseline (1044 mg OFC)Visit 01 Clinic Assessment~@~2~@~\N~@~SDY1520~@~3133~@@~
+PV8000~@~\N~@~1~@~1~@~Day 01 Dose Visit 02 Clinic Assessment~@~3~@~\N~@~SDY1520~@~3133~@@~
+PV8001~@~\N~@~2~@~2~@~Day 02 Dose Visit 03 Clinic Assessment~@~4~@~\N~@~SDY1520~@~3133~@@~
+PV8002~@~\N~@~14~@~14~@~Week 02 Visit 04 Clinic Assessment~@~5~@~\N~@~SDY1520~@~3133~@@~
+PV8003~@~\N~@~21~@~21~@~Week 03 Visit 05 Clinic Assessment~@~6~@~\N~@~SDY1520~@~3133~@@~
+PV8004~@~\N~@~28~@~28~@~Week 04 Visit 06 Clinic Assessment~@~7~@~\N~@~SDY1520~@~3133~@@~
+PV8005~@~\N~@~56~@~56~@~Week 08 Phone Assessment (Encounter)(Visit 06A)~@~8~@~\N~@~SDY1520~@~3133~@@~
+PV8006~@~\N~@~84~@~84~@~Week 12 Visit 07 Clinic Assessment~@~9~@~\N~@~SDY1520~@~3133~@@~
+PV8007~@~\N~@~112~@~112~@~Week 16 Phone Assessment (Encounter)(Visit 07A)~@~10~@~\N~@~SDY1520~@~3133~@@~
+PV8008~@~\N~@~140~@~140~@~Week 20 Phone Assessment (Encounter)(Visit 07B)~@~11~@~\N~@~SDY1520~@~3133~@@~
+PV8009~@~\N~@~168~@~168~@~Week 24 Visit 08 Clinic Assessment~@~12~@~\N~@~SDY1520~@~3133~@@~
+PV8010~@~\N~@~196~@~196~@~Week 28 Phone Assessment (Encounter)(Visit 08A)~@~13~@~\N~@~SDY1520~@~3133~@@~
+PV8011~@~\N~@~224~@~224~@~Week 32 Phone Assessment (Encounter)(Visit 08B)~@~14~@~\N~@~SDY1520~@~3133~@@~
+PV8012~@~\N~@~252~@~252~@~Week 36 Visit 09 Clinic Assessment~@~15~@~\N~@~SDY1520~@~3133~@@~
+PV8013~@~\N~@~280~@~280~@~Week 40 Phone Assessment (Encounter)(Visit 09A)~@~16~@~\N~@~SDY1520~@~3133~@@~
+PV8014~@~\N~@~308~@~308~@~Week 44 Phone Assessment (Encounter)(Visit 09B)~@~17~@~\N~@~SDY1520~@~3133~@@~
+PV8015~@~\N~@~336~@~336~@~Week 48 Phone Assessment (Encounter)(Visit 09C)~@~18~@~\N~@~SDY1520~@~3133~@@~
+PV8016~@~\N~@~364~@~364~@~Week 52 (5044 mg OFC) Visit 10 Clinic Assessment~@~19~@~\N~@~SDY1520~@~3133~@@~
+PV8017~@~\N~@~365~@~365~@~Visit 10AA Clinic Assessments~@~20~@~\N~@~SDY1520~@~3133~@@~
+PV8018~@~\N~@~366~@~366~@~Visit 10BB Clinic Assessments~@~21~@~\N~@~SDY1520~@~3133~@@~
+PV8019~@~\N~@~378~@~378~@~Visit 10CC Clinic Assessments~@~22~@~\N~@~SDY1520~@~3133~@@~
+PV8020~@~\N~@~385~@~385~@~Visit 10DD Clinic Assessments~@~23~@~\N~@~SDY1520~@~3133~@@~
+PV8021~@~\N~@~392~@~392~@~Visit 10EE Clinic Assessments~@~24~@~\N~@~SDY1520~@~3133~@@~
+PV8022~@~\N~@~420~@~420~@~Week 60 (5044 mg SU OFC) Visit 10Y Clinic Assessment~@~25~@~\N~@~SDY1520~@~3133~@@~
+PV8023~@~\N~@~504~@~504~@~Week 72 (5044 mg SU OFC) Visit 10Z Clinic Assessment~@~26~@~\N~@~SDY1520~@~3133~@@~
+PV8024~@~\N~@~504~@~504~@~Monthly call Phone Assessment (Encounter)(Visit 10A)~@~27~@~\N~@~SDY1520~@~3133~@@~
+PV8025~@~\N~@~504~@~504~@~Monthly call Phone Assessment (Encounter)(Visit 10B)~@~28~@~\N~@~SDY1520~@~3133~@@~
+PV8026~@~\N~@~504~@~504~@~Monthly call Phone Assessment (Encounter)(Visit 10C)~@~29~@~\N~@~SDY1520~@~3133~@@~
+PV8027~@~\N~@~504~@~504~@~Monthly call Phone Assessment (Encounter)(Visit 10D)~@~30~@~\N~@~SDY1520~@~3133~@@~
+PV8028~@~\N~@~504~@~504~@~Monthly call Phone Assessment (Encounter)(Visit 10E)~@~31~@~\N~@~SDY1520~@~3133~@@~
+PV8029~@~\N~@~504~@~504~@~Monthly call Phone Assessment (Encounter)(Visit 10F)~@~32~@~\N~@~SDY1520~@~3133~@@~
+PV8030~@~\N~@~546~@~546~@~Week 78 Visit 11 Clinic Assessment~@~33~@~\N~@~SDY1520~@~3133~@@~
+PV8031~@~\N~@~546~@~546~@~Monthly call Phone Assessment (Encounter)(Visit 11A)~@~34~@~\N~@~SDY1520~@~3133~@@~
+PV8032~@~\N~@~546~@~546~@~Monthly call Phone Assessment (Encounter)(Visit 11B)~@~35~@~\N~@~SDY1520~@~3133~@@~
+PV8033~@~\N~@~546~@~546~@~Monthly call Phone Assessment (Encounter)(Visit 11C)~@~36~@~\N~@~SDY1520~@~3133~@@~
+PV8034~@~\N~@~546~@~546~@~Monthly call Phone Assessment (Encounter)(Visit 11D)~@~37~@~\N~@~SDY1520~@~3133~@@~
+PV8035~@~\N~@~546~@~546~@~Monthly call Phone Assessment (Encounter)(Visit 11E)~@~38~@~\N~@~SDY1520~@~3133~@@~
+PV8036~@~\N~@~546~@~546~@~Monthly call Phone Assessment (Encounter)(Visit 11F)~@~39~@~\N~@~SDY1520~@~3133~@@~
+PV8037~@~\N~@~728~@~728~@~Week 104 Visit 12 Clinic Assessment~@~40~@~\N~@~SDY1520~@~3133~@@~
+PV8038~@~\N~@~728~@~728~@~Monthly call Phone Assessment (Encounter)(Visit 12A)~@~41~@~\N~@~SDY1520~@~3133~@@~
+PV8039~@~\N~@~728~@~728~@~Monthly call Phone Assessment (Encounter)(Visit 12B)~@~42~@~\N~@~SDY1520~@~3133~@@~
+PV8040~@~\N~@~728~@~728~@~Monthly call Phone Assessment (Encounter)(Visit 12C)~@~43~@~\N~@~SDY1520~@~3133~@@~
+PV8041~@~\N~@~728~@~728~@~Monthly call Phone Assessment (Encounter)(Visit 12D)~@~44~@~\N~@~SDY1520~@~3133~@@~
+PV8042~@~\N~@~728~@~728~@~Monthly call Phone Assessment (Encounter)(Visit 12E)~@~45~@~\N~@~SDY1520~@~3133~@@~
+PV8043~@~\N~@~728~@~728~@~Monthly call Phone Assessment (Encounter)(Visit 12F)~@~46~@~\N~@~SDY1520~@~3133~@@~
+PV8044~@~\N~@~910~@~910~@~Week 130 (5044 mg OFC) Visit 13 Clinic Assessment~@~47~@~\N~@~SDY1520~@~3133~@@~
+PV8045~@~\N~@~966~@~966~@~Week 138 (5044 mg SU OFC)  Visit 13Y Clinic Assessment~@~48~@~\N~@~SDY1520~@~3133~@@~
+PV8046~@~\N~@~1050~@~1050~@~Week 150 (5044 mg SU OFC) Visit 13Z Clinic Assessment~@~49~@~\N~@~SDY1520~@~3133~@@~
+PV8047~@~\N~@~1080~@~1080~@~1 Month Post Final OFC Visit F01 Phone Assessment~@~50~@~\N~@~SDY1520~@~3133~@@~
+PV8048~@~\N~@~1110~@~1110~@~2 Month Post Final OFC Visit F02 Phone Assessment~@~51~@~\N~@~SDY1520~@~3133~@@~
+PV8049~@~\N~@~1140~@~1140~@~3 Month Post Final OFC Visit F03 Phone Assessment~@~52~@~\N~@~SDY1520~@~3133~@@~
+PV8050~@~\N~@~1230~@~1230~@~6 Month Post Final OFC Visit F04 Phone Assessment~@~53~@~\N~@~SDY1520~@~3133~@@~

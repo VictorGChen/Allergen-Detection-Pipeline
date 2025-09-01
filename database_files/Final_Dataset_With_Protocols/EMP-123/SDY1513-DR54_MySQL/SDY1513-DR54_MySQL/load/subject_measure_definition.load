@@ -1,0 +1,18 @@
+LOAD DATA LOCAL INFILE "../MySQL/subject_measure_definition.txt"
+    into table subject_measure_definition
+    fields terminated by '~@~'
+    lines terminated by '~@@~\n'
+    (
+      subject_measure_accession,
+      algorithm,
+      description,
+      measureofcentraltendency,
+      measureofdispersion,
+      measuretype,
+      name,
+      outcometype,
+      study_accession,
+      timeframe,
+      unitofmeasure,
+      workspace_id
+    );

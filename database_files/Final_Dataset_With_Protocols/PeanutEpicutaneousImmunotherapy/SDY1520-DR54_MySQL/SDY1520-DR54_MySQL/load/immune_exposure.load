@@ -1,0 +1,19 @@
+LOAD DATA LOCAL INFILE "../MySQL/immune_exposure.txt"
+    into table immune_exposure
+    fields terminated by '~@~'
+    lines terminated by '~@@~\n'
+    (
+      exposure_accession,
+      arm_accession,
+      disease_ontology_id,
+      disease_preferred,
+      disease_reported,
+      disease_stage_preferred,
+      disease_stage_reported,
+      exposure_material_id,
+      exposure_material_preferred,
+      exposure_material_reported,
+      exposure_process_preferred,
+      exposure_process_reported,
+      subject_accession
+    );

@@ -1,0 +1,17 @@
+LOAD DATA LOCAL INFILE "../MySQL/subject.txt"
+    into table subject
+    fields terminated by '~@~'
+    lines terminated by '~@@~\n'
+    (
+      subject_accession,
+      ancestral_population,
+      description,
+      ethnicity,
+      gender,
+      race,
+      race_specify,
+      species,
+      strain,
+      strain_characteristics,
+      workspace_id
+    );

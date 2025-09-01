@@ -1,0 +1,28 @@
+SUB203702~@~\N~@~\N~@~Not Hispanic or Latino~@~Female~@~White~@~\N~@~Homo sapiens~@~\N~@~\N~@~3133~@@~
+SUB203703~@~\N~@~\N~@~Not Hispanic or Latino~@~Female~@~Black or African American~@~\N~@~Homo sapiens~@~\N~@~\N~@~3133~@@~
+SUB203704~@~\N~@~\N~@~Not Hispanic or Latino~@~Female~@~Asian~@~\N~@~Homo sapiens~@~\N~@~\N~@~3133~@@~
+SUB203705~@~\N~@~\N~@~Not Hispanic or Latino~@~Male~@~Black or African American~@~\N~@~Homo sapiens~@~\N~@~\N~@~3133~@@~
+SUB203706~@~\N~@~\N~@~Not Hispanic or Latino~@~Female~@~White~@~\N~@~Homo sapiens~@~\N~@~\N~@~3133~@@~
+SUB203707~@~\N~@~\N~@~Not Hispanic or Latino~@~Male~@~Black or African American~@~\N~@~Homo sapiens~@~\N~@~\N~@~3133~@@~
+SUB203708~@~\N~@~\N~@~Not Hispanic or Latino~@~Male~@~White~@~\N~@~Homo sapiens~@~\N~@~\N~@~3133~@@~
+SUB203709~@~\N~@~\N~@~Not Hispanic or Latino~@~Female~@~Black or African American~@~\N~@~Homo sapiens~@~\N~@~\N~@~3133~@@~
+SUB203710~@~\N~@~\N~@~Not Hispanic or Latino~@~Female~@~Black or African American~@~\N~@~Homo sapiens~@~\N~@~\N~@~3133~@@~
+SUB203711~@~\N~@~\N~@~Not Hispanic or Latino~@~Male~@~Black or African American~@~\N~@~Homo sapiens~@~\N~@~\N~@~3133~@@~
+SUB203712~@~\N~@~\N~@~Not Hispanic or Latino~@~Female~@~White~@~\N~@~Homo sapiens~@~\N~@~\N~@~3133~@@~
+SUB203713~@~\N~@~\N~@~Not Hispanic or Latino~@~Female~@~White~@~\N~@~Homo sapiens~@~\N~@~\N~@~3133~@@~
+SUB203714~@~\N~@~\N~@~Not Hispanic or Latino~@~Female~@~White~@~\N~@~Homo sapiens~@~\N~@~\N~@~3133~@@~
+SUB203715~@~\N~@~\N~@~Not Hispanic or Latino~@~Female~@~Black or African American~@~\N~@~Homo sapiens~@~\N~@~\N~@~3133~@@~
+SUB203716~@~\N~@~\N~@~Not Hispanic or Latino~@~Female~@~Black or African American~@~\N~@~Homo sapiens~@~\N~@~\N~@~3133~@@~
+SUB203717~@~\N~@~\N~@~Not Hispanic or Latino~@~Male~@~Black or African American~@~\N~@~Homo sapiens~@~\N~@~\N~@~3133~@@~
+SUB203718~@~\N~@~\N~@~Not Hispanic or Latino~@~Female~@~Black or African American~@~\N~@~Homo sapiens~@~\N~@~\N~@~3133~@@~
+SUB203719~@~\N~@~\N~@~Not Hispanic or Latino~@~Female~@~White~@~\N~@~Homo sapiens~@~\N~@~\N~@~3133~@@~
+SUB203720~@~\N~@~\N~@~Not Hispanic or Latino~@~Male~@~White~@~\N~@~Homo sapiens~@~\N~@~\N~@~3133~@@~
+SUB203721~@~\N~@~\N~@~Not Hispanic or Latino~@~Female~@~White~@~\N~@~Homo sapiens~@~\N~@~\N~@~3133~@@~
+SUB203722~@~\N~@~\N~@~Not Hispanic or Latino~@~Female~@~White~@~\N~@~Homo sapiens~@~\N~@~\N~@~3133~@@~
+SUB203723~@~\N~@~\N~@~Not Hispanic or Latino~@~Male~@~White~@~\N~@~Homo sapiens~@~\N~@~\N~@~3133~@@~
+SUB203724~@~\N~@~\N~@~Hispanic or Latino~@~Male~@~White~@~\N~@~Homo sapiens~@~\N~@~\N~@~3133~@@~
+SUB203725~@~\N~@~\N~@~Not Hispanic or Latino~@~Female~@~Asian~@~\N~@~Homo sapiens~@~\N~@~\N~@~3133~@@~
+SUB203726~@~\N~@~\N~@~Not Hispanic or Latino~@~Male~@~White~@~\N~@~Homo sapiens~@~\N~@~\N~@~3133~@@~
+SUB203727~@~\N~@~\N~@~Not Hispanic or Latino~@~Female~@~White~@~\N~@~Homo sapiens~@~\N~@~\N~@~3133~@@~
+SUB203728~@~\N~@~\N~@~Not Hispanic or Latino~@~Male~@~White~@~\N~@~Homo sapiens~@~\N~@~\N~@~3133~@@~
+SUB203729~@~\N~@~\N~@~Not Hispanic or Latino~@~Female~@~Other~@~White, Asian~@~Homo sapiens~@~\N~@~\N~@~3133~@@~

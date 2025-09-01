@@ -1,0 +1,29 @@
+SUBJECT_ACCESSION	ANCESTRAL_POPULATION	DESCRIPTION	ETHNICITY	GENDER	RACE	RACE_SPECIFY	SPECIES	STRAIN	STRAIN_CHARACTERISTICS	WORKSPACE_ID
+SUB203702			Not Hispanic or Latino	Female	White		Homo sapiens			3133
+SUB203703			Not Hispanic or Latino	Female	Black or African American		Homo sapiens			3133
+SUB203704			Not Hispanic or Latino	Female	Asian		Homo sapiens			3133
+SUB203705			Not Hispanic or Latino	Male	Black or African American		Homo sapiens			3133
+SUB203706			Not Hispanic or Latino	Female	White		Homo sapiens			3133
+SUB203707			Not Hispanic or Latino	Male	Black or African American		Homo sapiens			3133
+SUB203708			Not Hispanic or Latino	Male	White		Homo sapiens			3133
+SUB203709			Not Hispanic or Latino	Female	Black or African American		Homo sapiens			3133
+SUB203710			Not Hispanic or Latino	Female	Black or African American		Homo sapiens			3133
+SUB203711			Not Hispanic or Latino	Male	Black or African American		Homo sapiens			3133
+SUB203712			Not Hispanic or Latino	Female	White		Homo sapiens			3133
+SUB203713			Not Hispanic or Latino	Female	White		Homo sapiens			3133
+SUB203714			Not Hispanic or Latino	Female	White		Homo sapiens			3133
+SUB203715			Not Hispanic or Latino	Female	Black or African American		Homo sapiens			3133
+SUB203716			Not Hispanic or Latino	Female	Black or African American		Homo sapiens			3133
+SUB203717			Not Hispanic or Latino	Male	Black or African American		Homo sapiens			3133
+SUB203718			Not Hispanic or Latino	Female	Black or African American		Homo sapiens			3133
+SUB203719			Not Hispanic or Latino	Female	White		Homo sapiens			3133
+SUB203720			Not Hispanic or Latino	Male	White		Homo sapiens			3133
+SUB203721			Not Hispanic or Latino	Female	White		Homo sapiens			3133
+SUB203722			Not Hispanic or Latino	Female	White		Homo sapiens			3133
+SUB203723			Not Hispanic or Latino	Male	White		Homo sapiens			3133
+SUB203724			Hispanic or Latino	Male	White		Homo sapiens			3133
+SUB203725			Not Hispanic or Latino	Female	Asian		Homo sapiens			3133
+SUB203726			Not Hispanic or Latino	Male	White		Homo sapiens			3133
+SUB203727			Not Hispanic or Latino	Female	White		Homo sapiens			3133
+SUB203728			Not Hispanic or Latino	Male	White		Homo sapiens			3133
+SUB203729			Not Hispanic or Latino	Female	Other	White, Asian	Homo sapiens			3133

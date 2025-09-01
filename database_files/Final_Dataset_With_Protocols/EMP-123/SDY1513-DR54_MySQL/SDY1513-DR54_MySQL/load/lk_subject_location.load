@@ -1,0 +1,9 @@
+LOAD DATA LOCAL INFILE "../MySQL/lk_subject_location.txt"
+    into table lk_subject_location
+    fields terminated by '~@~'
+    lines terminated by '~@@~\n'
+    (
+      name,
+      description,
+      link
+    );

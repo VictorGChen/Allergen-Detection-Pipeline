@@ -1,0 +1,2 @@
+CREATE INDEX idx_subject_measure_study on subject_measure_definition(study_accession);
+CREATE INDEX idx_subject_measure_workspace on subject_measure_definition(workspace_id);

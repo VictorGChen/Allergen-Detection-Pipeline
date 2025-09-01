@@ -1,0 +1,15 @@
+LOAD DATA LOCAL INFILE "../MySQL/planned_visit.txt"
+    into table planned_visit
+    fields terminated by '~@~'
+    lines terminated by '~@@~\n'
+    (
+      planned_visit_accession,
+      end_rule,
+      max_start_day,
+      min_start_day,
+      name,
+      order_number,
+      start_rule,
+      study_accession,
+      workspace_id
+    );

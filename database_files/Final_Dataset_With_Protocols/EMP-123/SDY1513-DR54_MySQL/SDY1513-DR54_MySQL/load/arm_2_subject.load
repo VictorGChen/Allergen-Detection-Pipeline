@@ -1,0 +1,18 @@
+LOAD DATA LOCAL INFILE "../MySQL/arm_2_subject.txt"
+    into table arm_2_subject
+    fields terminated by '~@~'
+    lines terminated by '~@@~\n'
+    (
+      arm_accession,
+      subject_accession,
+      age_event,
+      age_event_specify,
+      age_unit,
+      max_subject_age,
+      min_subject_age,
+      subject_phenotype,
+      subject_location,
+      max_subject_age_in_years,
+      min_subject_age_in_years
+    );
+
