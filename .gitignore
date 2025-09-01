@@ -1,0 +1,32 @@
+# Python virtual environments
+venv/
+ENV/
+.venv/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Packaging / build
+.Python
+build/
+dist/
+.eggs/
+*.egg-info/
+*.egg
+
+# Test / coverage
+.tox/
+.nox/
+.coverage*
+htmlcov/
+.cache
+pytest_cache/
+
+# Jupyter
+.ipynb_checkpoints
+
+# IDEs
+.vscode/
+.idea/
