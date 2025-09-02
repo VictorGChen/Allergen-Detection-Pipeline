@@ -1,18 +1,14 @@
 """
 Data ingestion module for the allergy detection pipeline.
-Handles downloading and processing NHANES and ImmPort data with mock data fallback.
+Modified to work with your local database_files directory structure.
 """
 
 import os
-import requests
 import pandas as pd
 import numpy as np
 from pathlib import Path
 from typing import Dict, Optional, List, Tuple
 import logging
-import json
-import hashlib
-from datetime import datetime, timedelta
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -24,79 +20,234 @@ class DataIngestionError(Exception):
     """Custom exception for data ingestion errors"""
     pass
 
-class NHANESDataIngestion:
-    """Handle NHANES data downloading and processing"""
+class LocalDataIngestion:
+    """Handle data ingestion from your local dataset structure"""
     
-    def __init__(self, config: PipelineConfig):
+    def __init__(self, config: PipelineConfig, data_root: str = "database_files/Final_Dataset_With_Protocols"):
         self.config = config
-        self.base_url = f"{config.data.nhanes_base_url}/{config.data.nhanes_cycle}"
-        self.cache_dir = config.data.cache_dir
-        self.use_mock_data = False
+        self.data_root = Path(data_root)
         
-    def download_file(self, filename: str, force_download: bool = False) -> Optional[Path]:
-        """
-        Download NHANES XPT file with caching.
+        # Define the study folders as they appear in your repo
+        self.study_folders = {
+            'observational_food': 'AnObservationalStudyofFoodAllergy',
+            'peanut_epicutaneous': 'PeanutEpicutaneousImmunotherapy', 
+            'peanut_sublingual': 'PeanutSublingualImmunotherapy'
+        }
         
-        Args:
-            filename: Name of the XPT file to download
-            force_download: Force re-download even if cached
-            
-        Returns:
-            Path to the downloaded file or None if failed
-        """
-        cache_path = self.cache_dir / filename
+        # NHANES folder path
+        self.nhanes_folder = self.data_root / 'NHANES' / 'NHANES'
         
-        # Check cache first
-        if cache_path.exists() and not force_download:
-            logger.info(f"Using cached file: {filename}")
-            return cache_path
-        
-        # Try to download
-        url = f"{self.base_url}/{filename}"
-        try:
-            logger.info(f"Downloading {filename} from {url}")
-            response = requests.get(url, timeout=30)
-            response.raise_for_status()
-            
-            # Save to cache
-            with open(cache_path, 'wb') as f:
-                f.write(response.content)
-            
-            logger.info(f"Successfully downloaded {filename}")
-            return cache_path
-            
-        except (requests.RequestException, IOError) as e:
-            logger.warning(f"Failed to download {filename}: {e}")
-            logger.info("Will use mock data instead")
-            self.use_mock_data = True
-            return None
+        # Check if data exists
+        if not self.data_root.exists():
+            logger.warning(f"Data root {self.data_root} not found. Will use mock data.")
+            self.use_mock = True
+        else:
+            self.use_mock = False
+            logger.info(f"Found local data at {self.data_root}")
     
-    def read_xpt_file(self, filepath: Path) -> pd.DataFrame:
-        """Read NHANES XPT file"""
+    def read_tab_file(self, filepath: Path, delimiter: str = '\t') -> pd.DataFrame:
+        """Read tab-delimited files with proper error handling"""
         try:
-            import pyreadstat
-            df, meta = pyreadstat.read_xport(str(filepath))
-            return df
-        except ImportError:
-            # Fallback to pandas if pyreadstat not available
-            try:
-                df = pd.read_sas(filepath, format='xport')
-                return df
-            except Exception as e:
-                logger.error(f"Failed to read XPT file {filepath}: {e}")
-                return pd.DataFrame()
+            # Try different delimiters
+            delimiters = ['\t', '~@@~', '~@~', ',']
+            
+            for delim in delimiters:
+                try:
+                    df = pd.read_csv(filepath, sep=delim, engine='python', 
+                                   on_bad_lines='skip', low_memory=False)
+                    if len(df.columns) > 1:  # Successfully parsed
+                        return df
+                except:
+                    continue
+            
+            # If all fail, try with pandas default
+            return pd.read_csv(filepath, sep=None, engine='python')
+            
+        except Exception as e:
+            logger.error(f"Failed to read {filepath}: {e}")
+            return pd.DataFrame()
+    
+    def load_immport_study(self, study_name: str) -> Dict[str, pd.DataFrame]:
+        """Load data from a single ImmPort study folder"""
+        study_path = self.data_root / self.study_folders.get(study_name, study_name)
+        data_dict = {}
+        
+        if not study_path.exists():
+            logger.warning(f"Study path {study_path} not found")
+            return data_dict
+        
+        # Look for Tab folders
+        tab_folders = list(study_path.glob("*Tab/Tab"))
+        mysql_folders = list(study_path.glob("*MySQL/MySQL"))
+        
+        # Use Tab folders if available, otherwise MySQL
+        data_folders = tab_folders if tab_folders else mysql_folders
+        
+        for folder in data_folders:
+            # Read the main data files
+            files_to_load = [
+                'subject.txt',
+                'immune_exposure.txt', 
+                'planned_visit.txt',
+                'arm_2_subject.txt'
+            ]
+            
+            for filename in files_to_load:
+                filepath = folder / filename
+                if filepath.exists():
+                    df = self.read_tab_file(filepath)
+                    if not df.empty:
+                        data_dict[filename.replace('.txt', '')] = df
+                        logger.info(f"Loaded {filename} from {study_name}: shape {df.shape}")
+        
+        # Also check for IgE data in StudyFiles
+        study_files = list(study_path.glob("**/StudyFiles/*.txt"))
+        for filepath in study_files:
+            if 'ige' in filepath.name.lower():
+                df = self.read_tab_file(filepath)
+                if not df.empty:
+                    data_dict['ige_data'] = df
+                    logger.info(f"Loaded IgE data from {filepath.name}: shape {df.shape}")
+        
+        # Also check EMP-123 folder if it's the observational study
+        if study_name == 'observational_food':
+            emp_path = self.data_root / 'EMP-123'
+            if emp_path.exists():
+                emp_files = list(emp_path.glob("*.txt"))
+                for filepath in emp_files:
+                    df = self.read_tab_file(filepath)
+                    if not df.empty:
+                        data_dict[f'emp_{filepath.stem}'] = df
+                        logger.info(f"Loaded EMP data from {filepath.name}: shape {df.shape}")
+        
+        return data_dict
+    
+    def load_nhanes_data(self) -> pd.DataFrame:
+        """Load NHANES XPT files from local directory"""
+        if not self.nhanes_folder.exists():
+            logger.warning(f"NHANES folder {self.nhanes_folder} not found")
+            return pd.DataFrame()
+        
+        nhanes_data = {}
+        
+        # List of NHANES files to load (prioritize IgE and demographics)
+        xpt_files = [
+            'AL_IGE_D.xpt',  # IgE data - most important
+            'DEMO_D.xpt',    # Demographics D cycle
+            'DEMO_E.xpt',    # Demographics E cycle
+            'DEMO_L.xpt',    # Demographics L cycle
+            'DBQ_D.xpt',     # Dietary questionnaire D
+            'DBQ_F.xpt',     # Dietary questionnaire F
+            'DR1TOT_D.xpt',  # Dietary recall D
+            'DR1TOT_E.xpt',  # Dietary recall E
+            'DR1TOT_L.xpt',  # Dietary recall L
+            'MCQ_D.xpt',     # Medical conditions D
+            'MCQ_E.xpt',     # Medical conditions E
+            'MCQ_L.xpt'      # Medical conditions L
+        ]
+        
+        for filename in xpt_files:
+            filepath = self.nhanes_folder / filename
+            if filepath.exists():
+                try:
+                    # Try to read XPT file
+                    try:
+                        import pyreadstat
+                        df, meta = pyreadstat.read_xport(str(filepath))
+                        nhanes_data[filename.replace('.xpt', '')] = df
+                        logger.info(f"Loaded NHANES {filename}: shape {df.shape}")
+                    except ImportError:
+                        # Fallback to pandas
+                        df = pd.read_sas(filepath, format='xport', encoding='latin1')
+                        nhanes_data[filename.replace('.xpt', '')] = df
+                        logger.info(f"Loaded NHANES {filename} with pandas: shape {df.shape}")
+                except Exception as e:
+                    logger.warning(f"Could not load {filename}: {e}")
+        
+        # Merge NHANES datasets intelligently
+        if nhanes_data:
+            # Start with IgE data if available (most important)
+            if 'AL_IGE_D' in nhanes_data:
+                base_df = nhanes_data['AL_IGE_D']
+                logger.info(f"Using AL_IGE_D as base with {len(base_df)} samples")
+            else:
+                # Otherwise start with demographics
+                demo_dfs = [df for key, df in nhanes_data.items() if 'DEMO' in key]
+                if demo_dfs:
+                    base_df = demo_dfs[0]
+                else:
+                    base_df = list(nhanes_data.values())[0]
+            
+            # Merge other datasets
+            for name, df in nhanes_data.items():
+                if name != 'AL_IGE_D' and not df.equals(base_df):
+                    # Merge on SEQN if it exists
+                    if 'SEQN' in df.columns and 'SEQN' in base_df.columns:
+                        # Avoid duplicate columns
+                        common_cols = set(base_df.columns) & set(df.columns)
+                        common_cols.discard('SEQN')
+                        if common_cols:
+                            df = df.drop(columns=list(common_cols), errors='ignore')
+                        base_df = base_df.merge(df, on='SEQN', how='left')
+            
+            return base_df
+        
+        return pd.DataFrame()
+    
+    def combine_all_data(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
+        """Load and combine all available data sources"""
+        
+        all_immport_data = []
+        
+        # Load each ImmPort study
+        for study_key, study_name in self.study_folders.items():
+            logger.info(f"Loading {study_key} study...")
+            study_data = self.load_immport_study(study_key)
+            
+            if study_data:
+                # Combine subject-level data
+                if 'subject' in study_data:
+                    subject_df = study_data['subject'].copy()
+                    subject_df['study'] = study_key
+                    
+                    # Merge with immune exposure if available
+                    if 'immune_exposure' in study_data:
+                        immune_df = study_data['immune_exposure']
+                        merge_cols = list(set(subject_df.columns) & set(immune_df.columns))
+                        if merge_cols:
+                            subject_df = subject_df.merge(immune_df, on=merge_cols[0], how='left')
+                    
+                    # Merge with IgE data if available
+                    if 'ige_data' in study_data:
+                        ige_df = study_data['ige_data']
+                        # Try to merge on common column
+                        merge_cols = list(set(subject_df.columns) & set(ige_df.columns))
+                        if merge_cols:
+                            subject_df = subject_df.merge(ige_df, on=merge_cols[0], how='left')
+                    
+                    all_immport_data.append(subject_df)
+        
+        # Combine all ImmPort studies
+        if all_immport_data:
+            combined_immport = pd.concat(all_immport_data, ignore_index=True, sort=False)
+            logger.info(f"Combined ImmPort data shape: {combined_immport.shape}")
+        else:
+            logger.warning("No ImmPort data loaded, using mock data")
+            combined_immport = self.generate_mock_immport_data()
+        
+        # Load NHANES data
+        nhanes_data = self.load_nhanes_data()
+        if nhanes_data.empty:
+            logger.warning("No NHANES data loaded, using mock data")
+            nhanes_data = self.generate_mock_nhanes_data()
+        else:
+            logger.info(f"NHANES data shape: {nhanes_data.shape}")
+        
+        return nhanes_data, combined_immport
     
     def generate_mock_nhanes_data(self, n_samples: int = 1000) -> pd.DataFrame:
-        """
-        Generate realistic mock NHANES data for testing.
-        
-        Args:
-            n_samples: Number of samples to generate
-            
-        Returns:
-            DataFrame with mock NHANES data
-        """
-        np.random.seed(self.config.model.random_state)
+        """Generate realistic mock NHANES data for testing"""
+        np.random.seed(42)
         
         logger.info(f"Generating mock NHANES data with {n_samples} samples")
         
@@ -105,22 +256,16 @@ class NHANESDataIngestion:
             'SEQN': range(1, n_samples + 1),
             'RIAGENDR': np.random.choice([1, 2], n_samples),  # 1=Male, 2=Female
             'RIDAGEYR': np.random.normal(45, 20, n_samples).clip(2, 85),
-            'RIDRETH1': np.random.choice([1, 2, 3, 4, 5], n_samples, p=[0.15, 0.15, 0.4, 0.2, 0.1]),
+            'RIDRETH1': np.random.choice([1, 2, 3, 4, 5], n_samples),
             'DMDEDUC2': np.random.choice([1, 2, 3, 4, 5], n_samples),
             'INDFMPIR': np.random.exponential(2, n_samples).clip(0, 5),
         }
         
-        # Body measurements
-        data['BMXHT'] = np.random.normal(170, 10, n_samples).clip(140, 200)
-        data['BMXWT'] = np.random.normal(75, 15, n_samples).clip(40, 150)
-        data['BMXBMI'] = data['BMXWT'] / (data['BMXHT']/100)**2
-        
         # Generate correlated IgE measurements
-        # Total IgE (log-normal distribution)
         log_total_ige = np.random.normal(3.5, 1.2, n_samples)
         data['LBXIGE'] = np.exp(log_total_ige).clip(2, 5000)
         
-        # Allergen-specific IgE (correlated with total IgE)
+        # Allergen-specific IgE
         allergen_codes = ['LBXD1', 'LBXD2', 'LBXE1', 'LBXE5', 'LBXI6', 'LBXM1',
                          'LBXW1', 'LBXG5', 'LBXG8', 'LBXT7', 'LBXT3',
                          'LBXF13', 'LBXF1', 'LBXF2', 'LBXF24']
@@ -128,9 +273,9 @@ class NHANESDataIngestion:
         for allergen in allergen_codes:
             # Probability of sensitization increases with total IgE
             sensitization_prob = 1 / (1 + np.exp(-(log_total_ige - 3.5)))
-            sensitized = np.random.binomial(1, sensitization_prob)
+            sensitized = np.random.binomial(1, sensitization_prob * 0.3)  # 30% base rate
             
-            # Generate values: mostly below threshold, some above for sensitized
+            # Generate values
             base_values = np.random.exponential(0.1, n_samples)
             sensitized_values = np.where(
                 sensitized,
@@ -139,198 +284,52 @@ class NHANESDataIngestion:
             )
             data[allergen] = sensitized_values.clip(0.01, 100)
         
-        # Dietary data
-        data['DR1TKCAL'] = np.random.normal(2000, 500, n_samples).clip(500, 4000)
-        data['DR1TPROT'] = np.random.normal(80, 20, n_samples).clip(20, 200)
-        data['DR1TFAT'] = np.random.normal(70, 20, n_samples).clip(10, 150)
-        data['DR1TCARB'] = np.random.normal(250, 50, n_samples).clip(50, 500)
-        
-        # Add some missing values realistically
-        missing_cols = ['INDFMPIR', 'BMXBMI', 'DR1TKCAL', 'DR1TPROT']
-        for col in missing_cols:
-            missing_idx = np.random.choice(n_samples, size=int(n_samples * 0.05), replace=False)
-            data[col][missing_idx] = np.nan
-        
-        df = pd.DataFrame(data)
-        
-        # Add interview date information
-        base_date = datetime(2005, 1, 1)
-        interview_dates = [base_date + timedelta(days=int(x)) for x in np.random.uniform(0, 730, n_samples)]
-        df['interview_month'] = [d.month for d in interview_dates]
-        df['interview_year'] = [d.year for d in interview_dates]
-        
-        return df
-    
-    def ingest_nhanes_data(self) -> pd.DataFrame:
-        """
-        Main method to ingest NHANES data.
-        
-        Returns:
-            Merged NHANES DataFrame
-        """
-        dataframes = {}
-        
-        # Try to download and read each file
-        for data_type, filename in self.config.data.nhanes_files.items():
-            file_path = self.download_file(filename)
-            
-            if file_path and file_path.exists():
-                df = self.read_xpt_file(file_path)
-                if not df.empty:
-                    dataframes[data_type] = df
-                    logger.info(f"Loaded {data_type}: {df.shape}")
-        
-        # If no real data was loaded, use mock data
-        if not dataframes or self.use_mock_data:
-            logger.info("Using mock NHANES data")
-            return self.generate_mock_nhanes_data()
-        
-        # Merge dataframes on SEQN
-        merged_df = dataframes.get('demographics', pd.DataFrame())
-        for name, df in dataframes.items():
-            if name != 'demographics' and not df.empty:
-                if 'SEQN' in df.columns and 'SEQN' in merged_df.columns:
-                    merged_df = merged_df.merge(df, on='SEQN', how='inner')
-        
-        logger.info(f"Merged NHANES data shape: {merged_df.shape}")
-        return merged_df
-
-class ImmPortDataIngestion:
-    """Handle ImmPort data downloading and processing"""
-    
-    def __init__(self, config: PipelineConfig):
-        self.config = config
-        self.base_url = config.data.immport_base_url
-        self.token = None
-        
-    def authenticate(self) -> bool:
-        """Authenticate with ImmPort API"""
-        if not self.config.data.immport_username or not self.config.data.immport_password:
-            logger.warning("ImmPort credentials not provided, will use mock data")
-            return False
-        
-        try:
-            response = requests.post(
-                f"{self.base_url}/auth/token",
-                data={
-                    'username': self.config.data.immport_username,
-                    'password': self.config.data.immport_password
-                },
-                timeout=10
-            )
-            
-            if response.status_code == 200:
-                self.token = response.json().get('access_token')
-                logger.info("Successfully authenticated with ImmPort")
-                return True
-            else:
-                logger.warning("Failed to authenticate with ImmPort")
-                return False
-                
-        except Exception as e:
-            logger.warning(f"ImmPort authentication failed: {e}")
-            return False
+        return pd.DataFrame(data)
     
     def generate_mock_immport_data(self, n_samples: int = 500) -> pd.DataFrame:
-        """
-        Generate realistic mock ImmPort immunological data.
-        
-        Args:
-            n_samples: Number of samples to generate
-            
-        Returns:
-            DataFrame with mock ImmPort data
-        """
-        np.random.seed(self.config.model.random_state + 1)
+        """Generate realistic mock ImmPort data for testing"""
+        np.random.seed(43)
         
         logger.info(f"Generating mock ImmPort data with {n_samples} samples")
         
         data = {
             'subject_id': [f"SUB{i:04d}" for i in range(1, n_samples + 1)],
-            'study_id': np.random.choice(['SDY1', 'SDY2', 'SDY3'], n_samples),
-            'age': np.random.normal(40, 15, n_samples).clip(18, 75),
+            'study': np.random.choice(['observational_food', 'peanut_sublingual', 
+                                     'peanut_epicutaneous'], n_samples),
+            'age': np.random.normal(30, 15, n_samples).clip(5, 75),
             'gender': np.random.choice(['Male', 'Female'], n_samples),
+            'baseline_ige': np.exp(np.random.normal(4, 1, n_samples)),
+            'peanut_ige': np.random.exponential(2, n_samples),
+            'milk_ige': np.random.exponential(1.5, n_samples),
+            'egg_ige': np.random.exponential(1.8, n_samples),
+            'treatment_response': np.random.choice(['responder', 'non_responder', 'partial'], n_samples)
         }
         
-        # Cytokine measurements (pg/mL)
-        cytokines = ['IL4', 'IL5', 'IL13', 'IFN_gamma', 'IL10', 'TNF_alpha']
-        for cytokine in cytokines:
-            # Log-normal distribution for cytokine levels
-            log_values = np.random.normal(2, 1, n_samples)
-            data[f'{cytokine}_baseline'] = np.exp(log_values).clip(0.1, 1000)
-            
-            # Stimulated values (usually higher)
-            data[f'{cytokine}_stimulated'] = data[f'{cytokine}_baseline'] * np.random.lognormal(1, 0.5, n_samples)
-        
-        # T-cell populations (%)
-        data['CD4_percent'] = np.random.normal(45, 10, n_samples).clip(20, 70)
-        data['CD8_percent'] = np.random.normal(25, 8, n_samples).clip(10, 45)
-        data['Treg_percent'] = np.random.normal(5, 2, n_samples).clip(1, 15)
-        data['Th2_percent'] = np.random.normal(8, 3, n_samples).clip(2, 20)
-        
-        # Gene expression (normalized counts)
-        genes = ['GATA3', 'TBX21', 'FOXP3', 'IL4R', 'FCER1A']
-        for gene in genes:
-            data[f'{gene}_expression'] = np.random.lognormal(3, 1, n_samples).clip(1, 10000)
-        
-        df = pd.DataFrame(data)
-        
-        # Add some correlations
-        # Higher Th2 percentage correlates with higher IL4, IL5, IL13
-        th2_effect = (df['Th2_percent'] - 8) / 3
-        df['IL4_baseline'] *= (1 + 0.3 * th2_effect).clip(0.5, 2)
-        df['IL5_baseline'] *= (1 + 0.3 * th2_effect).clip(0.5, 2)
-        df['IL13_baseline'] *= (1 + 0.3 * th2_effect).clip(0.5, 2)
-        
-        return df
-    
-    def ingest_immport_data(self) -> pd.DataFrame:
-        """
-        Main method to ingest ImmPort data.
-        
-        Returns:
-            ImmPort DataFrame
-        """
-        # Try to authenticate
-        if not self.authenticate():
-            logger.info("Using mock ImmPort data")
-            return self.generate_mock_immport_data()
-        
-        # Try to fetch real data
-        try:
-            headers = {
-                'Authorization': f"bearer {self.token}",
-                'Content-Type': "application/json"
-            }
-            
-            # Example endpoint for immunological data
-            response = requests.get(
-                f"{self.base_url}/data/query/result/elisa",
-                headers=headers,
-                params={'studyAccession': 'SDY1'},
-                timeout=30
-            )
-            
-            if response.status_code == 200:
-                data = response.json()
-                df = pd.DataFrame(data)
-                logger.info(f"Loaded ImmPort data: {df.shape}")
-                return df
-            else:
-                logger.warning("Failed to fetch ImmPort data, using mock data")
-                return self.generate_mock_immport_data()
-                
-        except Exception as e:
-            logger.warning(f"ImmPort data fetch failed: {e}, using mock data")
-            return self.generate_mock_immport_data()
+        return pd.DataFrame(data)
 
 class AllergyDataIngestion:
     """Main class to orchestrate data ingestion from multiple sources"""
     
     def __init__(self, config: PipelineConfig):
         self.config = config
-        self.nhanes_ingestion = NHANESDataIngestion(config)
-        self.immport_ingestion = ImmPortDataIngestion(config)
+        
+        # Check for local data in various locations
+        possible_paths = [
+            "database_files/Final_Dataset_With_Protocols",
+            "Final_Dataset_With_Protocols",
+            "../database_files/Final_Dataset_With_Protocols"
+        ]
+        
+        self.local_ingestion = None
+        for path in possible_paths:
+            if Path(path).exists():
+                self.local_ingestion = LocalDataIngestion(config, path)
+                logger.info(f"Found local data at {path}")
+                break
+        
+        if not self.local_ingestion:
+            logger.info("No local data found, will use mock data")
+            self.local_ingestion = LocalDataIngestion(config)
         
         # Setup logging
         self._setup_logging()
@@ -357,11 +356,10 @@ class AllergyDataIngestion:
         """
         logger.info("Starting data ingestion pipeline")
         
-        # Ingest NHANES data
-        logger.info("Ingesting NHANES data...")
-        nhanes_data = self.nhanes_ingestion.ingest_nhanes_data()
+        # Load from local files or generate mock
+        nhanes_data, immport_data = self.local_ingestion.combine_all_data()
         
-        # Apply feature name mappings
+        # Apply feature name mappings to NHANES
         nhanes_data = self.apply_feature_mappings(nhanes_data)
         
         # Save raw data
@@ -369,11 +367,6 @@ class AllergyDataIngestion:
         nhanes_data.to_csv(nhanes_path, index=False)
         logger.info(f"Saved raw NHANES data to {nhanes_path}")
         
-        # Ingest ImmPort data
-        logger.info("Ingesting ImmPort data...")
-        immport_data = self.immport_ingestion.ingest_immport_data()
-        
-        # Save raw data
         immport_path = self.config.data.raw_data_dir / "immport_raw.csv"
         immport_data.to_csv(immport_path, index=False)
         logger.info(f"Saved raw ImmPort data to {immport_path}")
@@ -419,4 +412,4 @@ class AllergyDataIngestion:
                 logger.warning(f"  - {col}: {pct:.1f}%")
         
         # Check data types
-        logger.info(f"{source} data) data types:")
+        logger.info(f"{source} data types summary: {df.dtypes.value_counts().to_dict()}")

@@ -17,7 +17,7 @@ warnings.filterwarnings('ignore')
 
 # Import all pipeline components
 from config import PipelineConfig
-from data_ingestion import AllergyDataIngestion
+from data_ingestion import AllergyDataIngestion  # Uses the updated data_ingestion.py
 from feature_engineering import FeatureEngineer
 from model_training import ModelTrainer
 from shap_analysis import SHAPAnalyzer, AllergyFeatureAnalyzer
@@ -32,18 +32,22 @@ logger = logging.getLogger(__name__)
 class AllergyDetectionPipeline:
     """Main orchestrator for the complete allergy detection pipeline"""
     
-    def __init__(self, config_path: Optional[Path] = None):
+    def __init__(self, config_path: Optional[Path] = None, data_root: Optional[str] = None):
         """
         Initialize the pipeline with configuration.
         
         Args:
             config_path: Optional path to configuration file
+            data_root: Optional path to data directory
         """
         self.config = PipelineConfig(config_path)
         
         # Validate configuration
         if not self.config.validate():
             raise ValueError("Invalid configuration. Please check settings.")
+        
+        # Set data root if provided
+        self.data_root = data_root or "database_files"
         
         # Initialize components
         self.data_ingestion = AllergyDataIngestion(self.config)
@@ -60,6 +64,7 @@ class AllergyDetectionPipeline:
         self.results = {}
         
         logger.info("Allergy Detection Pipeline initialized successfully")
+        logger.info(f"Data root: {self.data_root}")
     
     def run_complete_pipeline(self, skip_steps: Optional[list] = None) -> Dict:
         """
@@ -405,6 +410,8 @@ def main():
     """Main entry point for the pipeline"""
     parser = argparse.ArgumentParser(description='Allergy Detection Pipeline')
     parser.add_argument('--config', type=str, help='Path to configuration file')
+    parser.add_argument('--data-root', type=str, default='database_files',
+                       help='Path to data directory (default: database_files)')
     parser.add_argument('--skip', nargs='*', 
                        choices=['ingestion', 'engineering', 'training', 'analysis'],
                        help='Steps to skip')
@@ -415,7 +422,7 @@ def main():
     
     # Initialize pipeline
     config_path = Path(args.config) if args.config else None
-    pipeline = AllergyDetectionPipeline(config_path)
+    pipeline = AllergyDetectionPipeline(config_path, args.data_root)
     
     # Set demo mode if requested
     if args.demo:
