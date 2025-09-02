@@ -320,7 +320,25 @@ class ModelTrainer:
         }
     
     def _build_nn_classifier(self, input_dim: int, num_classes: int) -> Model:
-        """Build neural network for classification"""
+        """
+        Build a deep neural network model for multi-class classification.
+        
+        Creates a feedforward neural network with configurable architecture,
+        batch normalization, dropout for regularization, and softmax output.
+        
+        Args:
+            input_dim: Number of input features
+            num_classes: Number of output classes
+            
+        Returns:
+            tf.keras.Model: Compiled neural network model
+            
+        Note:
+            Architecture and hyperparameters are controlled by config.model settings:
+            - hidden_layers: List of layer sizes
+            - dropout_rate: Dropout probability for regularization
+            - learning_rate: Adam optimizer learning rate
+        """
         model = Sequential([
             Dense(self.config.model.hidden_layers[0], activation='relu', input_dim=input_dim),
             BatchNormalization(),

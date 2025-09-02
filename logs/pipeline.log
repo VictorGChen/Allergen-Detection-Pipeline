@@ -1,0 +1,42 @@
+2025-09-02 13:42:56 - allergy_pipeline - INFO - main_pipeline.py:72 - Allergy Detection Pipeline initialized successfully
+2025-09-02 13:42:56 - allergy_pipeline - INFO - main_pipeline.py:73 - Data root: C:\Users\Victor Chen\Desktop\PythonProjects\AllergenPipeline\database_files
+2025-09-02 13:42:56 - allergy_pipeline - INFO - main_pipeline.py:85 - ==================================================
+2025-09-02 13:42:56 - allergy_pipeline - INFO - main_pipeline.py:86 - Starting Allergy Detection Pipeline
+2025-09-02 13:42:56 - allergy_pipeline - INFO - main_pipeline.py:87 - ==================================================
+2025-09-02 13:42:56 - allergy_pipeline - INFO - logging_config.py:128 - Starting Data Ingestion
+2025-09-02 13:42:56 - allergy_pipeline - INFO - main_pipeline.py:96 - 
+==============================
+2025-09-02 13:42:56 - allergy_pipeline - INFO - main_pipeline.py:97 - STEP 1: DATA INGESTION
+2025-09-02 13:42:56 - allergy_pipeline - INFO - main_pipeline.py:98 - ==============================
+2025-09-02 13:42:56 - allergy_pipeline - INFO - logging_config.py:148 - Memory usage for before data ingestion: 383.1 MB
+2025-09-02 13:42:56 - allergy_pipeline - INFO - logging_config.py:160 - NHANES data info: shape=(1000, 22), memory=0.2MB
+2025-09-02 13:42:56 - allergy_pipeline - INFO - logging_config.py:160 - ImmPort data info: shape=(500, 9), memory=0.1MB
+2025-09-02 13:42:56 - allergy_pipeline - INFO - logging_config.py:148 - Memory usage for after data ingestion: 385.6 MB
+2025-09-02 13:42:56 - allergy_pipeline - INFO - logging_config.py:134 - Completed Data Ingestion in 0.04s
+2025-09-02 13:42:56 - allergy_pipeline - INFO - main_pipeline.py:122 - 
+==============================
+2025-09-02 13:42:56 - allergy_pipeline - INFO - main_pipeline.py:123 - STEP 2: FEATURE ENGINEERING
+2025-09-02 13:42:56 - allergy_pipeline - INFO - main_pipeline.py:124 - ==============================
+2025-09-02 13:42:56 - allergy_pipeline - INFO - main_pipeline.py:145 - 
+==============================
+2025-09-02 13:42:56 - allergy_pipeline - INFO - main_pipeline.py:146 - STEP 3: MODEL TRAINING
+2025-09-02 13:42:56 - allergy_pipeline - INFO - main_pipeline.py:147 - ==============================
+2025-09-02 13:43:26 - allergy_pipeline - INFO - main_pipeline.py:187 - 
+==============================
+2025-09-02 13:43:26 - allergy_pipeline - INFO - main_pipeline.py:188 - STEP 4: SHAP ANALYSIS
+2025-09-02 13:43:26 - allergy_pipeline - INFO - main_pipeline.py:189 - ==============================
+2025-09-02 13:43:26 - allergy_pipeline - INFO - main_pipeline.py:250 - Running SHAP analysis for poly_random_forest
+2025-09-02 13:43:26 - allergy_pipeline - WARNING - main_pipeline.py:269 - SHAP analysis failed for poly_random_forest: could not convert string to float: 'middle_age'
+2025-09-02 13:43:26 - allergy_pipeline - INFO - main_pipeline.py:250 - Running SHAP analysis for ige_class_random_forest
+2025-09-02 13:43:26 - allergy_pipeline - WARNING - main_pipeline.py:269 - SHAP analysis failed for ige_class_random_forest: could not convert string to float: 'middle_age'
+2025-09-02 13:43:26 - allergy_pipeline - INFO - main_pipeline.py:250 - Running SHAP analysis for ige_reg_rf_regressor
+2025-09-02 13:43:26 - allergy_pipeline - WARNING - main_pipeline.py:269 - SHAP analysis failed for ige_reg_rf_regressor: could not convert string to float: 'middle_age'
+2025-09-02 13:43:26 - allergy_pipeline - INFO - main_pipeline.py:200 - 
+==============================
+2025-09-02 13:43:26 - allergy_pipeline - INFO - main_pipeline.py:201 - STEP 5: GENERATING REPORT
+2025-09-02 13:43:26 - allergy_pipeline - INFO - main_pipeline.py:202 - ==============================
+2025-09-02 13:43:26 - allergy_pipeline - INFO - main_pipeline.py:324 - Final report saved to outputs\reports\pipeline_report_20250902_134326.json
+2025-09-02 13:43:26 - allergy_pipeline - INFO - main_pipeline.py:206 - 
+==================================================
+2025-09-02 13:43:26 - allergy_pipeline - INFO - main_pipeline.py:207 - Pipeline completed successfully!
+2025-09-02 13:43:26 - allergy_pipeline - INFO - main_pipeline.py:208 - ==================================================

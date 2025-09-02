@@ -22,9 +22,22 @@ shap>=0.40.0  # For model interpretability
 # Development and testing
 pytest>=6.2.0
 pytest-cov>=2.12.0
+pytest-xvfb>=2.0.0  # For headless testing
+pytest-mock>=3.6.0  # For mocking in tests
 black>=21.6b0
 flake8>=3.9.0
+isort>=5.9.0  # Import sorting
+mypy>=0.910  # Type checking
+
+# Performance monitoring
+psutil>=5.8.0  # Memory and CPU monitoring
+memory-profiler>=0.60.0  # Memory profiling
 
 # Documentation
 jupyter>=1.0.0
 ipykernel>=6.0.0
+sphinx>=4.0.0  # Documentation generation
+sphinx-rtd-theme>=1.0.0  # ReadTheDocs theme
+
+# Parallel processing (optional but recommended)
+joblib>=1.0.0

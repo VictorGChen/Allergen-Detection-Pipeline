@@ -21,13 +21,10 @@ from data_ingestion import AllergyDataIngestion  # Uses the updated data_ingesti
 from feature_engineering import FeatureEngineer
 from model_training import ModelTrainer
 from shap_analysis import SHAPAnalyzer, AllergyFeatureAnalyzer
+from logging_config import setup_logging, ContextLogger, log_memory_usage, log_dataframe_info
 
-# Setup logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
+# Setup enhanced logging
+logger = setup_logging(log_level="INFO", log_to_console=True, log_to_file=True)
 
 class AllergyDetectionPipeline:
     """Main orchestrator for the complete allergy detection pipeline"""
@@ -46,8 +43,17 @@ class AllergyDetectionPipeline:
         if not self.config.validate():
             raise ValueError("Invalid configuration. Please check settings.")
         
-        # Set data root if provided
-        self.data_root = data_root or "database_files"
+        # Set data root if provided with validation
+        if data_root:
+            data_root_path = Path(data_root)
+            if not data_root_path.is_absolute():
+                # Convert to absolute path relative to current working directory
+                data_root_path = Path.cwd() / data_root_path
+            if not data_root_path.exists():
+                logger.warning(f"Data root path does not exist: {data_root_path}")
+            self.data_root = str(data_root_path)
+        else:
+            self.data_root = "database_files"
         
         # Initialize components
         self.data_ingestion = AllergyDataIngestion(self.config)
@@ -86,18 +92,27 @@ class AllergyDetectionPipeline:
         try:
             # Step 1: Data Ingestion
             if 'ingestion' not in skip_steps:
-                logger.info("\n" + "="*30)
-                logger.info("STEP 1: DATA INGESTION")
-                logger.info("="*30)
-                
-                self.nhanes_data, self.immport_data = self.data_ingestion.ingest_all_data()
-                
-                pipeline_results['data_ingestion'] = {
-                    'nhanes_shape': self.nhanes_data.shape,
-                    'immport_shape': self.immport_data.shape,
-                    'nhanes_columns': self.nhanes_data.columns.tolist()[:20],  # First 20 columns
-                    'status': 'completed'
-                }
+                with ContextLogger(logger, "Data Ingestion"):
+                    logger.info("\n" + "="*30)
+                    logger.info("STEP 1: DATA INGESTION")
+                    logger.info("="*30)
+                    
+                    log_memory_usage(logger, "before data ingestion")
+                    
+                    self.nhanes_data, self.immport_data = self.data_ingestion.ingest_all_data()
+                    
+                    # Log comprehensive data information
+                    log_dataframe_info(logger, self.nhanes_data, "NHANES data")
+                    log_dataframe_info(logger, self.immport_data, "ImmPort data")
+                    
+                    log_memory_usage(logger, "after data ingestion")
+                    
+                    pipeline_results['data_ingestion'] = {
+                        'nhanes_shape': self.nhanes_data.shape,
+                        'immport_shape': self.immport_data.shape,
+                        'nhanes_columns': self.nhanes_data.columns.tolist()[:20],  # First 20 columns
+                        'status': 'completed'
+                    }
             else:
                 # Load from saved files
                 self._load_saved_data()
@@ -194,9 +209,28 @@ class AllergyDetectionPipeline:
             
             return pipeline_results
             
+        except KeyboardInterrupt:
+            logger.info("Pipeline interrupted by user")
+            pipeline_results['status'] = 'interrupted'
+            return pipeline_results
+        except (FileNotFoundError, IOError) as e:
+            logger.error(f"Pipeline failed due to file system error: {str(e)}")
+            pipeline_results['error'] = f"File system error: {str(e)}"
+            pipeline_results['status'] = 'failed'
+            return pipeline_results
+        except (ValueError, KeyError) as e:
+            logger.error(f"Pipeline failed due to data/configuration error: {str(e)}")
+            pipeline_results['error'] = f"Data/configuration error: {str(e)}"
+            pipeline_results['status'] = 'failed'
+            return pipeline_results
+        except MemoryError as e:
+            logger.error(f"Pipeline failed due to insufficient memory: {str(e)}")
+            pipeline_results['error'] = f"Memory error: {str(e)}"
+            pipeline_results['status'] = 'failed'
+            return pipeline_results
         except Exception as e:
-            logger.error(f"Pipeline failed: {str(e)}", exc_info=True)
-            pipeline_results['error'] = str(e)
+            logger.error(f"Pipeline failed with unexpected error: {str(e)}", exc_info=True)
+            pipeline_results['error'] = f"Unexpected error: {str(e)}"
             pipeline_results['status'] = 'failed'
             return pipeline_results
     

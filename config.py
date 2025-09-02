@@ -39,6 +39,13 @@ class DataConfig:
     total_ige_threshold: float = 100.0  # kU/L for elevated total IgE
     missing_threshold: float = 0.3  # Maximum proportion of missing values
     
+    # Feature engineering thresholds
+    poly_sensitization_threshold: int = 3  # Number of sensitizations for poly-sensitization
+    severe_imbalance_ratio: float = 3.0  # Ratio threshold for class imbalance
+    low_income_threshold: float = 1.3  # PIR threshold for low income
+    middle_income_threshold: float = 3.5  # PIR threshold for middle income
+    high_school_education: int = 3  # Education level code for high school
+    
     def __post_init__(self):
         """Create directories if they don't exist"""
         for dir_path in [self.raw_data_dir, self.interim_data_dir, 
@@ -148,9 +155,21 @@ class PipelineConfig:
         self.data.immport_password = os.environ.get("IMMPORT_PASSWORD")
     
     def load_from_file(self, config_file: Path):
-        """Load configuration from JSON file"""
-        with open(config_file, 'r') as f:
-            config_dict = json.load(f)
+        """Load configuration from JSON file with validation"""
+        if not config_file.exists():
+            raise FileNotFoundError(f"Configuration file not found: {config_file}")
+        
+        if not config_file.suffix.lower() == '.json':
+            raise ValueError(f"Configuration file must be JSON format: {config_file}")
+        
+        try:
+            with open(config_file, 'r') as f:
+                config_dict = json.load(f)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Invalid JSON in configuration file {config_file}: {e}")
+        
+        if not isinstance(config_dict, dict):
+            raise ValueError("Configuration file must contain a JSON object")
         
         # Update data config
         if 'data' in config_dict:

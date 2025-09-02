@@ -1,0 +1,6 @@
+2025-09-02 13:42:56 - allergy_pipeline - INFO - logging_config.py:148 - Memory usage for before data ingestion: 383.1 MB
+2025-09-02 13:42:56 - allergy_pipeline - INFO - logging_config.py:160 - NHANES data info: shape=(1000, 22), memory=0.2MB
+2025-09-02 13:42:56 - allergy_pipeline - INFO - logging_config.py:160 - ImmPort data info: shape=(500, 9), memory=0.1MB
+2025-09-02 13:42:56 - allergy_pipeline - INFO - logging_config.py:148 - Memory usage for after data ingestion: 385.6 MB
+2025-09-02 13:42:56 - allergy_pipeline - INFO - logging_config.py:134 - Completed Data Ingestion in 0.04s
+2025-09-02 13:43:26 - allergy_pipeline - INFO - main_pipeline.py:207 - Pipeline completed successfully!

@@ -46,7 +46,22 @@ class LocalDataIngestion:
             logger.info(f"Found local data at {self.data_root}")
     
     def read_tab_file(self, filepath: Path, delimiter: str = '\t') -> pd.DataFrame:
-        """Read tab-delimited files with proper error handling"""
+        """
+        Read tab-delimited files with robust error handling and delimiter detection.
+        
+        Attempts to read files using multiple delimiter patterns commonly used in 
+        bioinformatics datasets. Falls back gracefully if parsing fails.
+        
+        Args:
+            filepath: Path to the file to read
+            delimiter: Primary delimiter to try first (default: tab)
+            
+        Returns:
+            pd.DataFrame: Parsed data, or empty DataFrame if all parsing attempts fail
+            
+        Raises:
+            No exceptions raised - returns empty DataFrame on failure
+        """
         try:
             # Try different delimiters
             delimiters = ['\t', '~@@~', '~@~', ',']
@@ -57,7 +72,11 @@ class LocalDataIngestion:
                                    on_bad_lines='skip', low_memory=False)
                     if len(df.columns) > 1:  # Successfully parsed
                         return df
-                except:
+                except (pd.errors.EmptyDataError, pd.errors.ParserError, UnicodeDecodeError) as e:
+                    logger.debug(f"Failed to parse {filepath} with delimiter '{delim}': {e}")
+                    continue
+                except Exception as e:
+                    logger.warning(f"Unexpected error parsing {filepath} with delimiter '{delim}': {e}")
                     continue
             
             # If all fail, try with pandas default

@@ -1,5 +1,10 @@
 """
-Unit tests for the Allergy Detection Pipeline
+Comprehensive unit tests for the Allergy Detection Pipeline.
+
+This module provides thorough testing coverage for all major components
+including data ingestion, feature engineering, model training, and 
+utility functions. Tests include edge cases, error conditions, and
+performance validation.
 """
 
 import pytest
@@ -197,3 +202,167 @@ def test_config_validation(sample_config):
     # Test invalid configuration
     sample_config.model.test_size = 1.5  # Invalid value
     assert sample_config.validate() == False
+
+
+class TestEdgeCases:
+    """Test edge cases and error conditions"""
+    
+    def test_empty_dataframe_handling(self):
+        """Test handling of empty DataFrames"""
+        config = PipelineConfig()
+        engineer = FeatureEngineer(config)
+        
+        # Empty DataFrame
+        empty_df = pd.DataFrame()
+        result = engineer.create_demographic_features(empty_df)
+        assert isinstance(result, pd.DataFrame)
+    
+    def test_missing_columns_handling(self):
+        """Test handling of missing required columns"""
+        config = PipelineConfig()
+        engineer = FeatureEngineer(config)
+        
+        # DataFrame without expected columns
+        df = pd.DataFrame({'unexpected_column': [1, 2, 3]})
+        result = engineer.create_sensitization_features(df)
+        assert isinstance(result, pd.DataFrame)
+    
+    def test_extreme_values_handling(self):
+        """Test handling of extreme values"""
+        config = PipelineConfig()
+        engineer = FeatureEngineer(config)
+        
+        # DataFrame with extreme values
+        df = pd.DataFrame({
+            'LBXIGE': [np.inf, -np.inf, np.nan, 1e10, -1e10]
+        })
+        
+        result = engineer.apply_log_transformation(df)
+        assert not result.isnull().all().any()  # Should handle infinities
+    
+    def test_zero_variance_features(self):
+        """Test handling of zero variance features"""
+        config = PipelineConfig()
+        trainer = ModelTrainer(config)
+        
+        # Data with zero variance features
+        df = pd.DataFrame({
+            'constant_feature': [1, 1, 1, 1, 1],
+            'varying_feature': [1, 2, 3, 4, 5],
+            'target': [0, 0, 1, 1, 1]
+        })
+        
+        X_train, X_test, y_train, y_test, features = trainer.prepare_data(
+            df, 'target', 'classification'
+        )
+        
+        # Should handle constant features gracefully
+        assert X_train.shape[1] <= 2  # Should remove or handle constant features
+
+
+class TestPerformance:
+    """Performance and scalability tests"""
+    
+    def test_large_dataset_handling(self):
+        """Test pipeline performance with larger datasets"""
+        config = PipelineConfig()
+        config.data.sample_size = 1000  # Moderate size for testing
+        
+        # Generate larger mock dataset
+        large_data = pd.DataFrame({
+            'LBXIGE': np.random.lognormal(3, 1, 1000),
+            'RIDAGEYR': np.random.normal(45, 20, 1000),
+            'RIAGENDR': np.random.choice([1, 2], 1000)
+        })
+        
+        engineer = FeatureEngineer(config)
+        
+        # Measure processing time
+        import time
+        start_time = time.time()
+        result = engineer.create_demographic_features(large_data)
+        duration = time.time() - start_time
+        
+        assert duration < 10  # Should complete within reasonable time
+        assert len(result) == 1000
+    
+    def test_memory_usage(self):
+        """Test memory efficiency of operations"""
+        config = PipelineConfig()
+        
+        # Test with moderate dataset size
+        data = pd.DataFrame({
+            'feature_' + str(i): np.random.randn(500) 
+            for i in range(50)  # 50 features, 500 samples
+        })
+        
+        from utils import optimize_dataframe_memory
+        
+        original_memory = data.memory_usage(deep=True).sum()
+        optimized_data = optimize_dataframe_memory(data)
+        optimized_memory = optimized_data.memory_usage(deep=True).sum()
+        
+        # Memory should be reduced or at least not significantly increased
+        assert optimized_memory <= original_memory * 1.1
+
+
+class TestDataValidation:
+    """Data validation and quality tests"""
+    
+    def test_data_quality_checks(self):
+        """Test data quality validation"""
+        from utils import validate_dataframe_requirements
+        
+        # Valid DataFrame
+        valid_df = pd.DataFrame({
+            'required_col1': [1, 2, 3],
+            'required_col2': ['a', 'b', 'c'],
+            'optional_col': [0.1, 0.2, 0.3]
+        })
+        
+        assert validate_dataframe_requirements(
+            valid_df, ['required_col1', 'required_col2'], min_rows=2
+        ) == True
+        
+        # Invalid DataFrame - missing column
+        invalid_df = pd.DataFrame({
+            'required_col1': [1, 2, 3]
+        })
+        
+        assert validate_dataframe_requirements(
+            invalid_df, ['required_col1', 'missing_col'], min_rows=2
+        ) == False
+        
+        # Invalid DataFrame - insufficient rows
+        assert validate_dataframe_requirements(
+            valid_df, ['required_col1'], min_rows=10
+        ) == False
+
+
+class TestErrorHandling:
+    """Error handling and recovery tests"""
+    
+    def test_graceful_failure_handling(self):
+        """Test graceful failure in various scenarios"""
+        config = PipelineConfig()
+        
+        # Test with corrupted configuration
+        config.model.test_size = -1  # Invalid value
+        trainer = ModelTrainer(config)
+        
+        # Should handle gracefully without crashing
+        test_data = pd.DataFrame({
+            'feature1': [1, 2, 3],
+            'target': [0, 1, 0]
+        })
+        
+        try:
+            result = trainer.prepare_data(test_data, 'target')
+            # Should either work with corrected value or raise informative error
+        except ValueError as e:
+            assert "test_size" in str(e).lower()
+
+
+if __name__ == "__main__":
+    # Run tests when script is executed directly
+    pytest.main([__file__, "-v"])

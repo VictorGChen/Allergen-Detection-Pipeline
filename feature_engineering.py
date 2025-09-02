@@ -5,7 +5,7 @@ Handles feature creation, transformation, and augmentation.
 
 import pandas as pd
 import numpy as np
-from typing import Tuple, List, Optional, Dict
+from typing import Tuple, List, Optional, Dict, Union
 from sklearn.preprocessing import StandardScaler, PolynomialFeatures
 from sklearn.impute import SimpleImputer
 from sklearn.neighbors import NearestNeighbors
@@ -13,6 +13,7 @@ import logging
 from pathlib import Path
 
 from config import PipelineConfig, IGE_CLASSES
+from utils import cache_result, optimize_dataframe_memory, ProgressTracker
 
 logger = logging.getLogger(__name__)
 
@@ -91,6 +92,10 @@ class FeatureEngineer:
         # 12. Create target variables
         df = self.create_target_variables(df)
         
+        # 13. Optimize memory usage
+        logger.info("Optimizing DataFrame memory usage...")
+        df = optimize_dataframe_memory(df)
+        
         # Save processed features
         output_path = self.config.data.processed_data_dir / "engineered_features.csv"
         df.to_csv(output_path, index=False)
@@ -107,21 +112,29 @@ class FeatureEngineer:
         allergen_cols = [col for col in self.ige_columns 
                         if col not in ['Total_IgE', 'LBXIGE']]
         
-        # Create binary sensitization indicators
-        for col in allergen_cols:
-            if col in df.columns:
+        # Create binary sensitization indicators (vectorized for performance)
+        available_cols = [col for col in allergen_cols if col in df.columns]
+        if available_cols:
+            threshold = self.config.data.ige_threshold
+            
+            # Vectorized computation of sensitization
+            sensitization_data = (df[available_cols] >= threshold).astype(int)
+            sensitization_data.columns = [f"{col}_sensitized" for col in available_cols]
+            
+            # Handle missing values in original data
+            for i, col in enumerate(available_cols):
                 sens_col = f"{col}_sensitized"
-                df[sens_col] = (df[col] >= self.config.data.ige_threshold).astype(int)
-                
-                # Handle missing values
-                df.loc[df[col].isna(), sens_col] = np.nan
+                sensitization_data.loc[df[col].isna(), sens_col] = np.nan
+            
+            # Add to main DataFrame
+            df = pd.concat([df, sensitization_data], axis=1)
         
         # Count total sensitizations
         sens_cols = [col for col in df.columns if col.endswith('_sensitized')]
         if sens_cols:
             df['total_sensitizations'] = df[sens_cols].sum(axis=1, skipna=True)
             df['any_sensitization'] = (df['total_sensitizations'] > 0).astype(int)
-            df['poly_sensitized'] = (df['total_sensitizations'] >= 3).astype(int)
+            df['poly_sensitized'] = (df['total_sensitizations'] >= self.config.data.poly_sensitization_threshold).astype(int)
             
             # Categorize by allergen type
             indoor_allergens = ['Dermatophagoides_farinae', 'Dermatophagoides_pteronyssinus',
@@ -167,15 +180,16 @@ class FeatureEngineer:
         # Poverty income ratio categories
         if 'Poverty_income_ratio' in df.columns or 'INDFMPIR' in df.columns:
             pir_col = 'Poverty_income_ratio' if 'Poverty_income_ratio' in df.columns else 'INDFMPIR'
-            df['low_income'] = (df[pir_col] < 1.3).astype(int)
-            df['middle_income'] = ((df[pir_col] >= 1.3) & (df[pir_col] < 3.5)).astype(int)
-            df['high_income'] = (df[pir_col] >= 3.5).astype(int)
+            df['low_income'] = (df[pir_col] < self.config.data.low_income_threshold).astype(int)
+            df['middle_income'] = ((df[pir_col] >= self.config.data.low_income_threshold) & 
+                                 (df[pir_col] < self.config.data.middle_income_threshold)).astype(int)
+            df['high_income'] = (df[pir_col] >= self.config.data.middle_income_threshold).astype(int)
         
         # Education level (for adults)
         if 'Education_level' in df.columns or 'DMDEDUC2' in df.columns:
             edu_col = 'Education_level' if 'Education_level' in df.columns else 'DMDEDUC2'
-            df['less_than_high_school'] = (df[edu_col] < 3).astype(int)
-            df['high_school'] = (df[edu_col] == 3).astype(int)
+            df['less_than_high_school'] = (df[edu_col] < self.config.data.high_school_education).astype(int)
+            df['high_school'] = (df[edu_col] == self.config.data.high_school_education).astype(int)
             df['some_college'] = (df[edu_col] == 4).astype(int)
             df['college_graduate'] = (df[edu_col] == 5).astype(int)
         
@@ -201,11 +215,17 @@ class FeatureEngineer:
             df['ige_75percentile'] = df[allergen_cols].quantile(0.75, axis=1)
             df['ige_iqr'] = df['ige_75percentile'] - df['ige_25percentile']
             
-            # Ratio features
+            # Ratio features with safe division
             total_ige_col = 'Total_IgE' if 'Total_IgE' in df.columns else 'LBXIGE'
             if total_ige_col in df.columns:
-                df['specific_to_total_ratio'] = df['mean_specific_ige'] / (df[total_ige_col] + 1)
-                df['max_specific_to_total_ratio'] = df['max_specific_ige'] / (df[total_ige_col] + 1)
+                # Use numpy.divide with safe division to handle zeros
+                total_ige_safe = df[total_ige_col].replace(0, np.nan)  # Replace 0 with NaN for proper ratio calculation
+                df['specific_to_total_ratio'] = np.divide(df['mean_specific_ige'], total_ige_safe, 
+                                                        out=np.zeros_like(df['mean_specific_ige']), 
+                                                        where=total_ige_safe!=0)
+                df['max_specific_to_total_ratio'] = np.divide(df['max_specific_ige'], total_ige_safe, 
+                                                            out=np.zeros_like(df['max_specific_ige']), 
+                                                            where=total_ige_safe!=0)
         
         return df
     
@@ -251,9 +271,17 @@ class FeatureEngineer:
         
         # Height and weight ratios
         if 'Height_cm' in df.columns and 'Weight_kg' in df.columns:
-            df['height_weight_ratio'] = df['Height_cm'] / (df['Weight_kg'] + 1)
+            # Safe division for height/weight ratio
+            weight_safe = df['Weight_kg'].replace(0, np.nan)
+            df['height_weight_ratio'] = np.divide(df['Height_cm'], weight_safe, 
+                                                out=np.zeros_like(df['Height_cm']), 
+                                                where=(weight_safe > 0) & (weight_safe.notna()))
         elif 'BMXHT' in df.columns and 'BMXWT' in df.columns:
-            df['height_weight_ratio'] = df['BMXHT'] / (df['BMXWT'] + 1)
+            # Safe division for NHANES columns
+            weight_safe = df['BMXWT'].replace(0, np.nan)
+            df['height_weight_ratio'] = np.divide(df['BMXHT'], weight_safe, 
+                                                out=np.zeros_like(df['BMXHT']), 
+                                                where=(weight_safe > 0) & (weight_safe.notna()))
         
         return df
     
@@ -411,7 +439,7 @@ class FeatureEngineer:
         majority_class = class_counts.idxmax()
         imbalance_ratio = class_counts[majority_class] / class_counts[minority_class]
         
-        if imbalance_ratio > 3:  # If imbalance is severe
+        if imbalance_ratio > self.config.data.severe_imbalance_ratio:  # If imbalance is severe
             logger.info(f"Class imbalance detected (ratio: {imbalance_ratio:.2f}). Applying augmentation...")
             
             # Use SMOTE-like augmentation
@@ -433,8 +461,12 @@ class FeatureEngineer:
         numeric_cols = minority_data.select_dtypes(include=[np.number]).columns.tolist()
         X = minority_data[numeric_cols].values
         
-        # Fit nearest neighbors
+        # Fit nearest neighbors with safety checks
         k = min(5, len(minority_data) - 1)
+        if k < 1 or len(minority_data) < 2:
+            logger.warning(f"Not enough minority samples for SMOTE-like augmentation. Need at least 2 samples, got {len(minority_data)}")
+            return pd.DataFrame()  # Return empty DataFrame to avoid issues downstream
+        
         nn = NearestNeighbors(n_neighbors=k)
         nn.fit(X)
         
@@ -445,9 +477,16 @@ class FeatureEngineer:
             idx = np.random.randint(0, len(X))
             sample = X[idx]
             
-            # Find k nearest neighbors
+            # Find k nearest neighbors with bounds checking
             distances, indices = nn.kneighbors(sample.reshape(1, -1), n_neighbors=k+1)
-            indices = indices.flatten()[1:]  # Exclude the sample itself
+            indices = indices.flatten()
+            if len(indices) > 1:
+                indices = indices[1:]  # Exclude the sample itself
+            else:
+                # Fallback: use original sample with small noise if no neighbors
+                synthetic = sample + np.random.normal(0, 0.01, len(sample))
+                synthetic_samples.append(synthetic)
+                continue
             
             # Random neighbor
             neighbor_idx = np.random.choice(indices)
